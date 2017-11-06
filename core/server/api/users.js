@@ -20,6 +20,40 @@ var Promise = require('bluebird'),
  */
 users = {
     /**
+     * ## Add
+     * @param {Tag} object the tag to create
+     * @returns {Promise(Tag)} Newly created Tag
+     */
+    add: function add(object, options) {
+        var tasks;
+
+        /**
+         * ### Model Query
+         * Make the call to the Model layer
+         * @param {Object} options
+         * @returns {Object} options
+         */
+        function doQuery(options) {
+            return models.User.add(options.data.users[0], _.omit(options, ['data']))
+                .then(function onModelResponse(model) {
+                    return {
+                        users: [model.toJSON(options)]
+                    };
+                });
+        }
+
+        // Push all of our tasks into a `tasks` array in the correct order
+        tasks = [
+            apiUtils.validate(docName),
+            apiUtils.handlePermissions(docName, 'add'),
+            apiUtils.convertOptions(allowedIncludes),
+            doQuery
+        ];
+
+        // Pipeline calls each task passing the result of one to be the arguments for the next
+        return pipeline(tasks, object, options);
+    },
+    /**
      * ## Browse
      * Fetch all users
      * @param {{context}} options (optional)

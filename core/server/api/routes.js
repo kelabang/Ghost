@@ -53,6 +53,8 @@ module.exports = function apiRoutes() {
     apiRouter.get('/settings/:key', mw.authenticatePrivate, api.http(api.settings.read));
     apiRouter.put('/settings', mw.authenticatePrivate, api.http(api.settings.edit));
 
+    apiRouter.post('/register', mw.authenticatePublic, api.http(api.users.add))
+
     // ## Users
     apiRouter.get('/users', mw.authenticatePublic, api.http(api.users.browse));
     apiRouter.get('/users/:id', mw.authenticatePublic, api.http(api.users.read));
